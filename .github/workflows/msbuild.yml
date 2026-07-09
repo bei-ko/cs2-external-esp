@@ -1,0 +1,30 @@
+name: Build VS Solution to EXE
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # 允许你在网页上手动点击按钮触发
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build with MSBuild
+      run: |
+        # 请把下面的 target.sln 换成你项目里那个 .sln 文件的实际名字
+        msbuild cs2-external-esp.sln /p:Configuration=Release /p:Platform=x64
+        
+    - name: Upload EXE Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-compiled-exe
+        path: |
+          **/Release/*.exe
+          **/Release/*.dll
